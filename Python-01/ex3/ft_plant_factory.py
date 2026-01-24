@@ -20,14 +20,26 @@ class Plant:
         """prints the parameters"""
         print(f"{self.name}: {self.height}cm, {self.age} days old")
 
-
 if __name__ == "__main__":
     rose = Plant("Rose", 25, 30)
-    print("=== Day 1 ===")
-    rose.get_info()
-    for i in range(7):
-        rose.grow_amount(2)
-        rose.age_amount(1)
-    print("=== Day 7 ===")
-    rose.get_info()
+    oak = Plant("Oak", 200, 365)
+    cactus = Plant("Cactus", 5, 90)
+    sunflower = Plant("Sunflower", 80, 45)
+    fern = Plant("Fern", 15, 120)
 
+    garden = [
+            rose,
+            oak,
+            cactus,
+            sunflower,
+            fern
+            ]
+
+    created = 0
+    print("=== Plant Factory Output ===")
+    for plant in garden:
+        plant.get_info()
+        created += 1
+    print()
+    print("Total plants created: ", created)
+      

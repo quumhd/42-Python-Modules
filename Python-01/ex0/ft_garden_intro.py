@@ -3,7 +3,7 @@
 class Plant:
     """defines the class"""
     def __init__(self, name: str, height: int, age: int) -> None:
-        """initalise class parameters"""
+        """initialise class parameters"""
         self.name = name
         self.height = height
         self.age = age
