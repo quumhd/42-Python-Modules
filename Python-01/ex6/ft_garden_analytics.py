@@ -224,9 +224,12 @@ if __name__ == "__main__":
     print(f"Garden Scores")
     print(f"Alice: {alice.stats.get_garden_score()}")
     print(f"Bob: {bob.stats.get_garden_score()}")
+    print()
     print(f"Gardens Managed")
     print(f"Alice: {alice.stats.get_gardens_managed()}")
     print(f"Bob: {bob.stats.get_gardens_managed()}")
+    print()
+    print("All manager in the garden network:")
     for person in manager:
         print(person.manager_name)
     print()
