@@ -39,7 +39,8 @@ class Flower(Plant):
 
 class Tree(Plant):
     """class Tree inherits from Plant"""
-    def __init__(self, name: str, height: int, age: int, trunk_diameter: int) -> None:
+    def __init__(self, name: str, height: int, age: int,
+                 trunk_diameter: int) -> None:
         """initialise parameters"""
         super().__init__(name, height, age)
         self.trunk_diameter = trunk_diameter
@@ -55,12 +56,13 @@ class Tree(Plant):
 
 class Vegetable(Plant):
     """class Vegetable inherits from Plant"""
-    def __init__(self, name: str, height: int, age: int, harvest_season: str, nutritional_value: str) -> None:
+    def __init__(self, name: str, height: int, age: int,
+                 harvest_season: str, nutritional_value: str) -> None:
         """initialise parameters"""
         super().__init__(name, height, age)
         self.harvest_season = harvest_season
         self.nutritional_value = nutritional_value
-    
+
     def print_info(self) -> None:
         """prints the vegetable specific info"""
         """get info"""
@@ -79,18 +81,16 @@ if __name__ == "__main__":
     tomato = Vegetable("Tomato", 80, 90, "summer", "vitamin C")
     carrot = Vegetable("Carrot", 21, 95, "summer", "vitamin D")
 
-    print(f"{rose.name} ({rose.__class__.__name__}): ", end = "")
+    print(f"{rose.name} ({rose.__class__.__name__}): ", end="")
     rose.get_info()
     rose.blooming()
     print()
 
-    print(f'{oak.name} ({oak.__class__.__name__}):', end = "")
+    print(f'{oak.name} ({oak.__class__.__name__}):', end="")
     oak.get_info()
     oak.get_diamater()
     print()
 
-    print(f"{tomato.name} ({tomato.__class__.__name__}): ", end = "")
+    print(f"{tomato.name} ({tomato.__class__.__name__}): ", end="")
     tomato.get_info()
     tomato.print_info()
-
-

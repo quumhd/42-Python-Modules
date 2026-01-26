@@ -20,6 +20,7 @@ class Plant:
         """prints the parameters"""
         print(f"{self.name}: {self.height}cm, {self.age} days old")
 
+
 if __name__ == "__main__":
     rose = Plant("Rose", 25, 30)
     oak = Plant("Oak", 200, 365)
@@ -42,4 +43,3 @@ if __name__ == "__main__":
         created += 1
     print()
     print("Total plants created: ", created)
-      

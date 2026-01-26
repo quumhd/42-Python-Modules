@@ -30,4 +30,3 @@ if __name__ == "__main__":
         rose.age_amount(1)
     print("=== Day 7 ===")
     rose.get_info()
-

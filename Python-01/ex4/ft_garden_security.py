@@ -22,16 +22,17 @@ class SecurePlant:
         if age >= 0:
             self.age = age
         else:
-            print("\033[31m[KO]\033[0m Age cannot be a negaive:", age)
+            print("\033[31m[KO]\033[0m Age cannot be a negative:", age)
 
     def get_info(self) -> None:
         """prints the parameters"""
         print(f"{self.name}: {self.height}cm, {self.age} days old")
 
+
 if __name__ == "__main__":
     print("=== Garden Security System ===")
     rose = SecurePlant("Rose", 15, 30)
-    
+
     rose.get_info()
     rose.set_height(35)
     rose.set_age(21)

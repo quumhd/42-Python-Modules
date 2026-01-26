@@ -16,14 +16,14 @@ class Plant:
         if height >= 0:
             self.__height = height
         else:
-            print("\033[31m[KO]\033[0m Height cannot be a negative:", height)
+            print("Height cannot be a negative:", height)
 
     def set_age(self, age: int) -> None:
         """checks that age cannot be negative"""
         if age >= 0:
             self.__age = age
         else:
-            print("\033[31m[KO]\033[0m Age cannot be a negaive:", age)
+            print("Age cannot be a negative:", age)
 
     def get_name(self) -> None:
         """returns the name of the flower"""
@@ -69,12 +69,12 @@ class GardenManager:
         self.stats = self.GardenStats(self)
 
     @classmethod
-    def create_garden_network(cls, names: list["GardenManager"]) -> list["GardenManager"]:
+    def create_garden_network(cls, names:
+                              list["GardenManager"]) -> list["GardenManager"]:
         """creates a garden network of multiple managers"""
         for name in names:
             cls.all_gardens.append(name)
         return cls.all_gardens
-
 
     def add_garden(self, name: str) -> None:
         """adds gardens to the manager"""
@@ -102,14 +102,13 @@ class GardenManager:
             self.garden[name].remove(to_harvest)
             GardenManager.harvested += 1
 
-
     def grow_all_plants(self, name: str, amount: int) -> None:
         """grows all plants in the garden by amount"""
         if name in self.garden:
-            print(f"{self.manager_name} helps all the plants in {name} to grow")
+            print(f"{self.manager_name} helps all plants in {name} to grow")
             for Plant in self.garden[name]:
                 Plant.set_height(Plant.get_height() + amount)
-                print("- ", end = "")
+                print("- ", end="")
                 print(f"{Plant.get_name()} grew {amount} cm")
                 GardenManager.growth += amount
         else:
@@ -123,7 +122,6 @@ class GardenManager:
         else:
             print(f"{name} does not exist")
 
-       
     class GardenStats:
         """Manages the statistics of the garden"""
         def __init__(self, manager: "GardenManager") -> None:
@@ -132,7 +130,7 @@ class GardenManager:
         def get_planted_amount(self) -> None:
             """return the total amount of plants planted"""
             return GardenManager.planted
- 
+
         def get_harvest_amount(self) -> None:
             """returns the amount of harvested plants in a garden"""
             return GardenManager.harvested
@@ -173,7 +171,7 @@ class GardenManager:
             return amount
 
         def get_garden_score(self) -> None:
-            total_score = 0;
+            total_score = 0
             total_score += self.get_gardens_managed() * 50
             total_score += self.get_regular_amount() * 10
             total_score += self.get_flowering_amount() * 25
@@ -185,13 +183,12 @@ class GardenManager:
             if name not in self.manager.garden:
                 print(f"Garden {name} does not exist")
             else:
-                print(f"=== {self.manager.manager_name}'s garden report about {name} ===")
+                print(f"=== {self.manager.manager_name}'s garden "
+                      "report about {name} ===")
                 print("Plants in garden:")
                 for Plant in self.manager.garden[name]:
-                    print("- ", end = "")
+                    print("- ", end="")
                     Plant.print_plant_info()
-
-
 
 
 if __name__ == "__main__":
@@ -221,11 +218,11 @@ if __name__ == "__main__":
     print(f"Prize winning plants: {alice.stats.get_prize_amount()}")
     print()
     print("=== Utility functions ===")
-    print(f"Garden Scores")
+    print("Garden Scores")
     print(f"Alice: {alice.stats.get_garden_score()}")
     print(f"Bob: {bob.stats.get_garden_score()}")
     print()
-    print(f"Gardens Managed")
+    print("Gardens Managed")
     print(f"Alice: {alice.stats.get_gardens_managed()}")
     print(f"Bob: {bob.stats.get_gardens_managed()}")
     print()
@@ -234,11 +231,11 @@ if __name__ == "__main__":
         print(person.manager_name)
     print()
     print("=== Error Tests ===")
+    tulip = FloweringPlant("tulip", -5, 66)
+    tulip = FloweringPlant("tulip", 5, -66)
     alice.add_plant("x", tulip)
     alice.harvest_plant("x", tulip)
     x = Plant("x", 1, 1)
     alice.harvest_plant("Backyard", x)
     alice.grow_all_plants("x", 2)
     alice.stats.print_garden_information("x")
-
-
