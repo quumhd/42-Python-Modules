@@ -22,6 +22,7 @@ class SunError(PlantError):
 
 def check_plant_health(plant_name: str, water_level: int,
                        sunlight_hours: int) -> None:
+    """prints the plant health if healthy or raises error if not"""
     is_healthy = True
     try:
         if plant_name is None or plant_name == "":
@@ -54,6 +55,8 @@ def check_plant_health(plant_name: str, water_level: int,
 
 
 def test_plant_checks() -> None:
+    """tests the erros"""
+    print("=== Garaden Plant Health Checker ===\n")
     print("Testing good values:")
     check_plant_health("Tulip", 5, 8)
     print()
@@ -70,5 +73,4 @@ def test_plant_checks() -> None:
 
 
 if __name__ == "__main__":
-    print("=== Garaden Plant Health Checker ===\n")
     test_plant_checks()

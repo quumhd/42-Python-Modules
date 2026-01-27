@@ -69,11 +69,13 @@ class GardenManager:
         self.garden = {}
 
     def add_plant(self, name: str, water: int, sunlight: int) -> None:
+        """add a new plant to the garden"""
         new_plant = Plant(name, water, sunlight)
         self.garden[name] = new_plant
         print(f"{name} has been added to {self.manager_name}'s garden")
 
     def water_plants(self, amount: int) -> None:
+        """waters avery plant and raises an error if it goes over the limit"""
         try:
             print("Opening watering systems")
             for plant in self.garden:
@@ -84,6 +86,7 @@ class GardenManager:
             print("Closing watering systems (cleanup)")
 
     def check_plant_health(self, name: str) -> None:
+        """prints the plant information if healthy, raises an error if not"""
         if name not in self.garden:
             raise GardenError(f"{name} does not exist in this garden")
         else:
@@ -103,6 +106,7 @@ class GardenManager:
 
 
 def test_plant_checks() -> None:
+    """error tests"""
     alice = GardenManager("alice")
     print()
     print("Adding plants to garden:")
