@@ -25,15 +25,15 @@ class Plant:
         else:
             print("Age cannot be a negative:", age)
 
-    def get_name(self) -> None:
+    def get_name(self) -> str:
         """returns the name of the flower"""
         return self.__name
 
-    def get_height(self) -> None:
+    def get_height(self) -> int:
         """returns the height of the flower"""
         return self.__height
 
-    def get_age(self) -> None:
+    def get_age(self) -> int:
         """returns the age of the flower"""
         return self.__age
 
