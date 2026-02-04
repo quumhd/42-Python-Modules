@@ -57,15 +57,14 @@ def parse_arguments() -> dict:
 
 def print_inventory_analysis(inventory: dict) -> None:
     """prints the inventory analysis"""
+    unique_items = 0
     total_items = 0
-    for item in inventory["Scarce"]:
-        total_items += inventory["Scarce"][item]
-    for item in inventory["Moderate"]:
-        total_items += inventory["Moderate"][item]
-    for item in inventory["Abundant"]:
-        total_items += inventory["Abundant"][item]
+    for cat in inventory:
+        for item in inventory[cat]:
+            unique_items += 1
+            total_items += inventory[cat][item]
     print(f"Total items in inventory: {total_items}")
-    print(f"Unique item types: {len(inventory)}")
+    print(f"Unique item types: {unique_items}")
 
 
 def print_inventory_statistics(inventory: dict) -> None:
@@ -93,7 +92,7 @@ def print_inventory_categories(inventory: dict) -> None:
 
 
 def ft_inventory_system() -> None:
-    """to do"""
+    """shows off the inventory system"""
     inventory = parse_arguments()
     if inventory is None:
         return
@@ -108,7 +107,7 @@ def ft_inventory_system() -> None:
     print("\n=== Dictionary Properties Demo ===")
     print(inventory.keys())
     print(inventory.values())
-    print(inventory['Scarce'].get("sword"))
+    print(f"Sample lookup sword: {inventory['Scarce'].get("sword", 0)}")
     
 
 
