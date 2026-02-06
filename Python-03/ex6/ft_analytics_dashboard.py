@@ -79,9 +79,9 @@ def ft_analytics_dashboard() -> None:
     """to do"""
     data = {
         'players': {
-            'alice': {'level': 41, 'total_score': 2824, 'sessions_played': 13, 'favorite_mode': 'ranked', 'achievements_count': 5},
-            'bob': {'level': 16, 'total_score': 4657, 'sessions_played': 27, 'favorite_mode': 'ranked', 'achievements_count': 2},
-            'charlie': {'level': 44, 'total_score': 9935, 'sessions_played': 21, 'favorite_mode': 'ranked', 'achievements_count': 7},
+        'alice': {'level': 41, 'total_score': 2824, 'sessions_played': 13, 'favorite_mode': 'ranked', 'achievements_count': 5},
+        'bob': {'level': 16, 'total_score': 4657, 'sessions_played': 27, 'favorite_mode': 'ranked', 'achievements_count': 2},
+        'charlie': {'level': 44, 'total_score': 9935, 'sessions_played': 21, 'favorite_mode': 'ranked', 'achievements_count': 7},
         'diana': {'level': 3, 'total_score': 1488, 'sessions_played': 21, 'favorite_mode': 'casual', 'achievements_count': 4},
         'eve': {'level': 33, 'total_score': 1434, 'sessions_played': 81, 'favorite_mode': 'casual', 'achievements_count': 7},
         'frank': {'level': 15, 'total_score': 8359, 'sessions_played': 85, 'favorite_mode': 'competitive', 'achievements_count': 1}
