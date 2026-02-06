@@ -10,23 +10,25 @@ class SecurePlant:
 
         self.set_height(height)
         self.set_age(age)
-        print("Plant created: {self.name}")
+        print(f"Plant created: {self.name}")
 
     def set_height(self, height: int) -> None:
+        """only sets the height if positive"""
         if height >= 0:
-            self.height = height
+            self.__height = height
         else:
             print("\033[31m[KO]\033[0m Height cannot be a negative:", height)
 
     def set_age(self, age: int) -> None:
+        """onyl sets the age if its positive"""
         if age >= 0:
-            self.age = age
+            self.__age = age
         else:
             print("\033[31m[KO]\033[0m Age cannot be a negative:", age)
 
     def get_info(self) -> None:
         """prints the parameters"""
-        print(f"{self.name}: {self.height}cm, {self.age} days old")
+        print(f"{self.name}: {self.__height}cm, {self.__age} days old")
 
 
 if __name__ == "__main__":

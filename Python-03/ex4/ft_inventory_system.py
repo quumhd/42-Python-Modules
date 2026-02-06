@@ -17,7 +17,7 @@ def parse_arguments() -> dict:
     """turns the input into a dictionary"""
     inventory = {
         "Scarce": {},
-        "Moderate":{},
+        "Moderate": {},
         "Abundant": {}
     }
     to_add = dict()
@@ -107,8 +107,7 @@ def ft_inventory_system() -> None:
     print("\n=== Dictionary Properties Demo ===")
     print(inventory.keys())
     print(inventory.values())
-    print(f"Sample lookup sword: {inventory['Scarce'].get("sword", 0)}")
-    
+    print(f"Sample lookup sword: {inventory['Scarce'].get('sword', 0)}")
 
 
 if __name__ == "__main__":

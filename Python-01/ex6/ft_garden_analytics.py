@@ -38,6 +38,7 @@ class Plant:
         return self.__age
 
     def print_plant_info(self) -> None:
+        """prints the name, height and age of the plant"""
         print(f"{self.__name}: {self.__height} cm, {self.__age} days")
 
 
@@ -171,6 +172,7 @@ class GardenManager:
             return amount
 
         def get_garden_score(self) -> None:
+            """prints out the garden score"""
             total_score = 0
             total_score += self.get_gardens_managed() * 50
             total_score += self.get_regular_amount() * 10

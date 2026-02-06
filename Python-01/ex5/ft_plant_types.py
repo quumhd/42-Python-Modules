@@ -65,7 +65,6 @@ class Vegetable(Plant):
 
     def print_info(self) -> None:
         """prints the vegetable specific info"""
-        """get info"""
         print(f"{self.name} is ready to harvest in {self.harvest_season}")
         print(f"{self.name} is rich in {self.nutritional_value}")
 

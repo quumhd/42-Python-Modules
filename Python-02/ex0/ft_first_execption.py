@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 def check_temperature(temp_str: str) -> None:
+    """trys to convert temp_str to an int and catches an error if it fails"""
     try:
         temp = (int(temp_str))
     except ValueError:
