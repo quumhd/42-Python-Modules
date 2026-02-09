@@ -16,6 +16,7 @@ def print_inventory(inventory: dict) -> dict:
 def parse_arguments() -> dict:
     """turns the input into a dictionary"""
     inventory = {
+        "all_items": {},
         "Scarce": {},
         "Moderate": {},
         "Abundant": {}
@@ -47,10 +48,11 @@ def parse_arguments() -> dict:
         to_add = {name: count}
         if count <= 3:
             quantity = "Scarce"
-        elif count > 3 & count < 10:
+        elif count < 10:
             quantity = "Moderate"
         else:
             quantity = "Abundant"
+        inventory["all_items"].update(to_add)
         inventory[quantity].update(to_add)
     return inventory
 
@@ -88,7 +90,8 @@ def print_inventory_statistics(inventory: dict) -> None:
 def print_inventory_categories(inventory: dict) -> None:
     """prints all the items by caegorie"""
     for cat in inventory:
-        print(f"{cat}: {inventory[cat]}")
+        if len(inventory[cat]) > 0 and cat != "all_items":
+            print(f"{cat}: {inventory[cat]}")
 
 
 def ft_inventory_system() -> None:
@@ -105,9 +108,9 @@ def ft_inventory_system() -> None:
     print("\n=== Item Categories ===")
     print_inventory_categories(inventory)
     print("\n=== Dictionary Properties Demo ===")
-    print(inventory.keys())
-    print(inventory.values())
-    print(f"Sample lookup sword: {inventory['Scarce'].get('sword', 0)}")
+    print(inventory['all_items'].keys())
+    print(inventory['all_items'].values())
+    print(f"Sample lookup sword: {inventory['all_items'].get('sword', 0)}")
 
 
 if __name__ == "__main__":
