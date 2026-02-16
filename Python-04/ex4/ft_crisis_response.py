@@ -27,7 +27,8 @@ def ft_crisis_response() -> None:
         print("STATUS: Crisis handled, security maintained")
     print()
     try:
-        print("ROUTINE ACCESS:  Attempting access to 'standart_archive.txt'...")
+        print("ROUTINE ACCESS:  Attempting access to "
+              "'standart_archive.txt'...")
         with open("standart_archive.txt") as f:
             print(f"SUCCESS: Archive recovered - '{f.readlines}'")
     except FileNotFoundError:

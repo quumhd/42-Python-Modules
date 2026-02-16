@@ -5,7 +5,7 @@ import sys
 
 
 def ft_stream_management() -> None:
-    """to do"""
+    """shows the 3 different communication channels"""
     alert_channel = sys.stderr
     standart_channel = sys.stdout
     print("=== CVYER ARCHIVES - COMMUNICATION SYTEM ===")
