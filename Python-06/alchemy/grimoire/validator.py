@@ -2,13 +2,10 @@
 
 def validate_ingredients(ingredients: str) -> str:
     """vaidates ingedients"""
-    if ingredients == "fire":
-        return "VALID"
-    elif ingredients == "water":
-        return "VALID"
-    elif ingredients == "earth":
-        return "VALID"
-    elif ingredients == "air":
-        return "VALID"
-    else:
-        return "INVALID"
+    ingredient = ingredients.split()
+    for i in ingredient:
+        if i == "fire" or i == "water" or i == "earth" or i == "air":
+            pass
+        else:
+            return f"{ingredients} - INVALID"
+    return f"{ingredients} - VALID"
