@@ -10,12 +10,12 @@ class DataProcessor(ABC):
 	@abstractmethod
 	def process(self, data: Any) -> str:
 		"""processes a data stream"""
-		raise NotImplementedError("Subclasses must implement this method")
+		pass
 
 	@abstractmethod
 	def validate(self, data: Any) -> bool:
 		"""validates a data stream"""
-		raise NotImplementedError("Subclasses must implement this method")
+		pass
 
 	def format_output(self, data: Any) -> str:
 		"""formats the output of a data stream"""

@@ -9,7 +9,7 @@ class DataStream(ABC):
 	@abstractmethod
 	def process_batch(self, data_batch: List[Any]) -> str:
 		"""processes a batch of data"""
-		raise NotImplementedError("Subclasses must implement this method")
+		pass
 
 	def filter_data(self, data: List[Any], criteria: Optional[str]=None) -> List[Any]:
 		"""filters data based on criteria"""

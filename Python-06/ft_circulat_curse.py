@@ -2,6 +2,7 @@
 
 from alchemy.grimoire import record_spell, validate_ingredients
 
+
 def ft_circulat_curse() -> None:
     """wda"""
     print("=== Circular Curse Breaking ===\n")
