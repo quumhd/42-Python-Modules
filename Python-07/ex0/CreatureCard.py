@@ -9,20 +9,33 @@ class CreatureCard(Card):
         super().__init__(name, cost, rarity)
         self.init_attack(attack)
         self.init_health(health)
+        self.type = "creature"
 
-    def play(self, game_state: dict) -> dict:
+    def play(self, game_state: dict, mana: int) -> dict:
         """returns the play result"""
         play_result = dict()
-        if super().is_playable(game_state['mana']) is False:
+        round = 1
+        if not game_state:
+            round = 1
+        else:
+            for rnd in game_state:
+                round = rnd + 1
+        if super().is_playable(mana) is False:
             play_result = {
-                'mana': "insuffient mana to play this card"
+                'mana': mana,
+                'card_played': None,
+                'mana_used': 0,
+                'effect': "Insufficient mana to play this card"
             }
-            return play_result
+            return "Insufficient mana to play this card"
         play_result = {
+            'mana': mana - self.cost,
             'card_played': self.name,
             'mana_used': self.cost,
             'effect': "Creature summoned to the battlefiled"
             }
+        to_add = {round: play_result}
+        game_state.update(to_add)
         return play_result
 
     def attack_target(self, target) -> dict:
@@ -31,6 +44,7 @@ class CreatureCard(Card):
         if isinstance(target, CreatureCard) is False:
             raise ValueError("Target must be a CreatureCard")
         target.health -= self.attack
+        self.health -= target.attack
         attack_result = {
             'attacker': self.name,
             'target': target.name,

@@ -13,12 +13,14 @@ def main() -> None:
     print(f"CreatureCard Info:\n{card.get_card_info()}\n")
     print(f"Playing {card.name} with {mana} Mana availible")
     print("Playable:", card.is_playable(mana))
-    print("Play result:", card.play(game_state={'mana': mana}))
+    game_state = dict()
+    print("Play result:", card.play(game_state, mana))
+    print("game_state:", game_state)
     print()
     mana -= card.cost
     mana -= card2.cost
     print("Healing Angel attacks Goblin Warrior")
-    print("Attack result:", card.attack_target(card2))
+    print("Attack result:", card.attack_target(card2, game_state))
     print()
     print(f"Testing insufficent mana ({mana} availible)")
     print("Playable:", card.is_playable(mana))

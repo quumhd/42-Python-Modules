@@ -8,25 +8,41 @@ class SpellCard(Card):
         super().__init__(name, cost, rarity)
         self.effect_type = effect_type
         self.played = False
+        self.type = "spell"
 
-    def play(self, game_state: dict) -> dict:
+    def play(self, game_state: dict, mana) -> dict:
         """retuns the play result"""
         play_result = dict()
+        round = 1
+        if not game_state:
+            round = 1
+        else:
+            for rnd in game_state:
+                round = rnd + 1
         if self.played is True:
             play_result = {
-                'spell_played': "You already used this spell"
+                'mana': mana,
+                'card_played': None,
+                'mana_used': 0,
+                'effect': "You already used this spell"
             }
             return play_result
-        if super().is_playable(game_state['mana']) is False:
+        if super().is_playable(mana) is False:
             play_result = {
-                'mana': "insuffient mana to play this card"
+                'mana': mana,
+                'card_played': None,
+                'mana_used': 0,
+                'effect': "Insufficient mana to play this card"
             }
-            return play_result
+            return "Insufficient mana to play this card"
         play_result = {
+            'mana': mana - self.cost,
             'card_played': self.name,
             'mana_used': self.cost,
             'effect': "Creature summoned to the battlefiled"
             }
+        to_add = {round: play_result}
+        game_state.update(to_add)
         return play_result
 
     def resolve_effect(self, targets: list) -> dict:
@@ -41,6 +57,7 @@ class SpellCard(Card):
                 target.health += 2
             elif self.effect_type == "buff":
                 target.attack += 1
+            elif self.effect_type == "debuff":
+                target.attack -= 1
             else:
                 return
-
