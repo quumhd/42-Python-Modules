@@ -1,0 +1,17 @@
+[project]
+name = "loading"
+version = "0.1.0"
+description = "installs all requiered dependecies"
+authors = [{name = "jdreissi"}]
+requires-python = ">=3.11"
+
+dependencies = [
+    "numpy (==2.3.0)",
+    "pandas (>=2.1.0)",
+    "requests (>=2.21.0)",
+    "matplotlib (>=3.7.2)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
