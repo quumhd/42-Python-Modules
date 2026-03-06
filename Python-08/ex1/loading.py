@@ -41,7 +41,7 @@ def loading() -> None:
         return
     print()
     print("Analysing Matrix data...")
-    np.random.seed(0)
+    np.random.seed(42)
     rows, cols = 100, 100
     matrix_data = np.random.rand(rows, cols) * 100
     print("Processing 10000 data points")
