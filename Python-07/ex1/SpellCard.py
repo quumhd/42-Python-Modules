@@ -1,5 +1,6 @@
 
-from ex0.Card import Card, CreatureCard
+from ex0.Card import Card
+from ex0.CreatureCard import CreatureCard
 
 
 class SpellCard(Card):
@@ -10,15 +11,17 @@ class SpellCard(Card):
         self.played = False
         self.type = "spell"
 
-    def play(self, game_state: dict, mana) -> dict:
+    def play(self, game_state: dict) -> dict:
         """retuns the play result"""
         play_result = dict()
         round = 1
         if not game_state:
             round = 1
+            mana = 10
         else:
             for rnd in game_state:
                 round = rnd + 1
+            mana = game_state[rnd]['mana']
         if self.played is True:
             play_result = {
                 'mana': mana,
@@ -48,9 +51,8 @@ class SpellCard(Card):
     def resolve_effect(self, targets: list) -> dict:
         """applys the spell effect to all targets"""
         for target in targets:
-            if isinstance(target, CreatureCard):
-
-                return
+            if isinstance(target, CreatureCard) is False:
+                continue
             if self.effect_type == "damage":
                 target.health -= 2
             elif self.effect_type == "heal":

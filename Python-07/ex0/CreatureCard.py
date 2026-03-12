@@ -11,15 +11,17 @@ class CreatureCard(Card):
         self.init_health(health)
         self.type = "creature"
 
-    def play(self, game_state: dict, mana: int) -> dict:
+    def play(self, game_state: dict) -> dict:
         """returns the play result"""
         play_result = dict()
         round = 1
         if not game_state:
             round = 1
+            mana = 10
         else:
             for rnd in game_state:
                 round = rnd + 1
+            mana = game_state[rnd]['mana']
         if super().is_playable(mana) is False:
             play_result = {
                 'mana': mana,
@@ -27,7 +29,7 @@ class CreatureCard(Card):
                 'mana_used': 0,
                 'effect': "Insufficient mana to play this card"
             }
-            return "Insufficient mana to play this card"
+            return play_result
         play_result = {
             'mana': mana - self.cost,
             'card_played': self.name,
@@ -38,11 +40,17 @@ class CreatureCard(Card):
         game_state.update(to_add)
         return play_result
 
-    def attack_target(self, target) -> dict:
+    def attack_target(self, target: Card, game_state: dict) -> dict:
         """attacks another card"""
+        round = 1
         attack_result = dict()
         if isinstance(target, CreatureCard) is False:
             raise ValueError("Target must be a CreatureCard")
+        if not game_state:
+            round = 1
+        else:
+            for rnd in game_state:
+                round = rnd + 1
         target.health -= self.attack
         self.health -= target.attack
         attack_result = {
@@ -51,16 +59,18 @@ class CreatureCard(Card):
             'damage_dealt': self.attack,
             'combat_resolved': target.health <= 0
         }
+        to_add = {round: attack_result}
+        game_state.update(to_add)
         return attack_result
 
-    def init_attack(self, attack):
+    def init_attack(self, attack: int):
         """makes sure attack is positive"""
         if attack >= 0:
             self.attack = attack
         else:
             raise ValueError("Attack Value must be 0 or greater")
 
-    def init_health(self, health):
+    def init_health(self, health: int):
         """makes sure health is positive"""
         if health > 0:
             self.health = health

@@ -14,7 +14,7 @@ def main() -> None:
     print(f"Playing {card.name} with {mana} Mana availible")
     print("Playable:", card.is_playable(mana))
     game_state = dict()
-    print("Play result:", card.play(game_state, mana))
+    print("Play result:", card.play(game_state))
     print("game_state:", game_state)
     print()
     mana -= card.cost

@@ -1,9 +1,9 @@
 
 import random
-from ex0.cards import Card
+from ex0.Card import Card
 
 
-class Deck():
+class Deck:
     """deck of cards"""
     deck = list()
 
@@ -41,7 +41,7 @@ class Deck():
         spells = 0
         artifacts = 0
         avg_cost = 0
-        total_cards = len(self.deck)
+        total_cards = 0
         for card in self.deck:
             if card.type == "creature":
                 creatures += 1
@@ -52,7 +52,7 @@ class Deck():
         for card in self.deck:
             total_cost += card.cost
             total_cards += 1
-        avg_cost = int(total_cost / total_cards)
+        avg_cost = round(total_cost / total_cards, 1)
         deck_stats = {
             'total_cards': total_cards,
             'creatures': creatures,
