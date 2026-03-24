@@ -25,7 +25,7 @@ def oracle() -> None:
 
     for key in keys:
         if key is None:
-            print(f"Key is missing, exiting...")
+            print("Key is missing, exiting...")
             exit()
 
     print("Configuration loaded:")
@@ -39,7 +39,6 @@ def oracle() -> None:
     print("[OK] No hardcoded secrets detected")
     print("[OK] .env file properly configured")
     print("[OK] Production overrides availible")
-
 
 
 if __name__ == "__main__":

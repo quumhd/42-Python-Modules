@@ -41,9 +41,6 @@ def construct() -> None:
         print("activate # On Windows")
         print()
         print("Then run the program again")
-        
-
-
 
 
 if __name__ == "__main__":

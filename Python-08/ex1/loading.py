@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
 
-import os
-import sys
-
-
 def loading() -> None:
     """demonstrates loading external librarys"""
     print("LOADING STATUS: Loading programs...\n")
@@ -24,18 +20,20 @@ def loading() -> None:
         all_dependencies = False
     try:
         import requests
-        print(f"[OK] requests {requests.__version__} - Data manipulation ready")
+        print(f"[OK] requests {requests.__version__} - Data "
+              "manipulation ready")
     except ImportError:
         print("[KO] requests has not been installed properly")
         all_dependencies = False
     try:
         import matplotlib
         import matplotlib.pyplot as plt
-        print(f"[OK] matplotliob {matplotlib.__version__} - Data manipulation ready")
+        print(f"[OK] matplotliob {matplotlib.__version__} - Data "
+              "manipulation ready")
     except ImportError:
         print("[KO] matplotlib has not been installed properly")
         all_dependencies = False
-    if all_dependencies == False:
+    if all_dependencies is False:
         print()
         print("Missing dependencies, exiting the program...")
         return
@@ -53,7 +51,7 @@ def loading() -> None:
     plt.savefig('matrix_heatmap.png')
     plt.close()
     print("Analysis complete")
-    print(f"Result saved to: matrix_heatmap.png")
+    print("Result saved to: matrix_heatmap.png")
 
 
 if __name__ == "__main__":
