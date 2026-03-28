@@ -1,144 +1,127 @@
 #!/usr/bin/env python3
 
-
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List, Optional
 
 
 class DataProcessor(ABC):
-	"""abstract base class for data stream processing"""
-	@abstractmethod
-	def process(self, data: Any) -> str:
-		"""processes a data stream"""
-		pass
+    @abstractmethod
+    def process(self, data: Any) -> str:
+        pass
 
-	@abstractmethod
-	def validate(self, data: Any) -> bool:
-		"""validates a data stream"""
-		pass
+    @abstractmethod
+    def validate(self, data: Any) -> bool:
+        pass
 
-	def format_output(self, data: Any) -> str:
-		"""formats the output of a data stream"""
-		return f"Processed data: {data}"
+    def format_output(self, result: str) -> str:
+        return result
 
 
 class NumericProcessor(DataProcessor):
-	"""data processor for numeric data streams"""
-	def process(self, data: Any) -> str:
-		"""processes numeric data stream and returns sum, average, and count"""
-		try:
-			if not self.validate(data):
-				raise ValueError("Input contains non numeric values")
-			sume = sum(data)
-			agv = sume / len(data)
-			length = len(data)
-			return self.format_output([sume, agv, length])
-		except ValueError as e:
-			return f"Error processing numeric data: {e}"
+    def process(self, data: Any) -> str:
+        if not self.validate(data):
+            raise ValueError("Invalid data for NumericProcessor")
+        return (str(len(data)) + " " + str(sum(data)) + " " +
+                str(sum(data) / len(data)))
 
-	def validate(self, data: Any) -> bool:
-		"""validates that the input is a list of numeric values"""
-		return isinstance(data, list) and all(isinstance(x, (int, float)) for x in data)
+    def validate(self, data: Any) -> bool:
+        return all(isinstance(x, (int, float)) for x in data)
 
-	def format_output(self, data: Any) -> str:
-		"""formats the output for numeric data stream processing"""
-		return f"Processed {data[2]} values, sum={data[0]}, avg={data[1]}"
-	
+    def format_output(self, result: str) -> str:
+        data: List[str] = result.split()
+        return (f"Processed {data[0]} numeric values, "
+                f"sum={data[1]}, avg={data[2]}")
+
+
 class TextProcessor(DataProcessor):
-	"""data processor for text data streams"""
-	def process(self, data: Any) -> str:
-		"""processes text data stream and returns character count and word count"""
-		try:
-			if not self.validate(data):
-				raise ValueError("Input is not valid text data")
-			char_count = len(data)
-			word_count = len(data.split())
-			return self.format_output([char_count, word_count])
-		except ValueError as e:
-			return f"Error processing text data: {e}"
+    def process(self, data: Any) -> str:
+        if not self.validate(data):
+            raise ValueError("Invalid data for TextProcessor")
+        return str(len(data)) + " " + str(len(data.split()))
 
-	def validate(self, data: Any) -> bool:
-		"""validates that the input is a string"""
-		return isinstance(data, str)
+    def validate(self, data: Any) -> bool:
+        return isinstance(data, str)
 
-	def format_output(self, data: Any) -> str:
-		"""formats the output for text data stream processing"""
-		return f"Processed Text: {data[0]} characters, {data[1]} words"
-	
+    def format_output(self, result: str) -> str:
+        data: List[str] = result.split()
+        return f"Processed text: {data[0]} characters, {data[1]} words"
+
+
 class LogProcessor(DataProcessor):
-	"""data processor for log data streams"""
-	def process(self, data: Any) -> str:
-		try:
-			if not self.validate(data):
-				raise ValueError("Input is not valid log data")
-			return self.format_output(data)
-		except ValueError as e:
-			return f"Error processing log data: {e}"
+    def process(self, data: Any) -> str:
+        if not self.validate(data):
+            raise ValueError("Invalid data for LogProcessor")
+        return f"{data}"
 
-	def validate(self, data: Any) -> bool:
-		return isinstance(data, str) and "ERROR" in data
+    def validate(self, data: Any) -> bool:
+        return isinstance(data, dict)
 
-	def format_output(self, data: Any) -> str:
-		return f"[Alert] Error level dected: {' '.join(data.split()[1:])}"
-
-
-class StreamProcessor:
-	"""main class for demonstrating polymorphic data stream processing"""
-	def __init__(self):
-		self.processors = [
-		NumericProcessor(),
-		TextProcessor(),
-		LogProcessor()
-		]
-		
-	def process_stream(self, data: Any) -> None:
-		"""processes a data stream through all processors"""
-		for processor in self.processors:
-			if processor.validate(data):
-				print(processor.process(data))
+    def format_output(self, result: str) -> str:
+        cleaned = result.replace("{", "").replace("}", "")
+        cleaned = cleaned.replace("'", "").replace('"', "")
+        if cleaned.startswith("ERROR:"):
+            return f"[ALERT] {cleaned}"
+        return f"{cleaned}"
 
 
-def stream_processor() -> None:
-	"""demonstrates polymorphic data stream processing"""
-	print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===")
+def UniversalProcessor(data: Any) -> Optional[str]:
+    numeric_processor = NumericProcessor()
+    text_processor = TextProcessor()
+    log_processor = LogProcessor()
+    if numeric_processor.validate(data):
+        return numeric_processor.format_output(numeric_processor.process(data))
+    elif text_processor.validate(data):
+        return text_processor.format_output(text_processor.process(data))
+    elif log_processor.validate(data):
+        return log_processor.format_output(log_processor.process(data))
+    else:
+        return None
 
-	print()
 
-	print("Initializing Numeric Processor...")
-	numeric_processor = NumericProcessor()
-	numeric_data = [1, 2, 3, 4, 5]
-	print(f"Processing data: {numeric_data}")
-	print(f"Validation result: {numeric_processor.validate(numeric_data)}")
-	print("Output:", numeric_processor.process(numeric_data))
-	
-	print()
+def stream_processor():
+    print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
+    print("Initializing Numeric Processor...")
+    numeric_processor = NumericProcessor()
+    numeric_data = [1, 2, 3, 4, 5]
+    if numeric_processor.validate(numeric_data):
+        print(f"Processing data: {numeric_data}")
+        print("Validation: Numeric data verified")
+        processed = numeric_processor.process(numeric_data)
+        print(f"Output: {numeric_processor.format_output(processed)}\n")
+    else:
+        print("Invalid data for Numeric Processor")
 
-	print("Initializing Text Processor...")
-	text_processor = TextProcessor()
-	text_data = "Hello Nexus World"
-	print(f"Processing data: {text_data}")
-	print(f"Validation result: {text_processor.validate(text_data)}")
-	print("Output:", text_processor.process(text_data))
+    print("Initializing Text Processor...")
+    text_processor = TextProcessor()
+    text_data = "Hello Nexus World"
+    if text_processor.validate(text_data):
+        print(f"Processing data: {text_data}")
+        print("Validation: Text data verified")
+        processed = text_processor.process(text_data)
+        print(f"Output: {text_processor.format_output(processed)}\n")
+    else:
+        print("Invalid data for Text Processor")
 
-	print()
+    print("Initializing Log Processor...")
+    log_processor = LogProcessor()
+    log_data = {"ERROR": "Connection timeout"}
+    if log_processor.validate(log_data):
+        print(f"Processing data: {log_data}")
+        print("Validation: Log data verified")
+        processed = log_processor.process(log_data)
+        print(f"Output: {log_processor.format_output(processed)}\n")
+    else:
+        print("Invalid data for Log Processor")
 
-	print("Initializing Log Processor...")
-	log_processor = LogProcessor()
-	log_data = "ERROR: Connection timeout"
-	print(f"Processing data: {log_data}")
-	print(f"Validation result: {log_processor.validate(log_data)}")
-	print("Output:", log_processor.process(log_data))
-
-	print()
-
-	processor = StreamProcessor()
-	print("\n=== Polymorhpic Processing Demo ===")
-	print()
-	print("Processing multiple data types through same interface...\n")
-	processor.process_stream(numeric_data)
-	processor.process_stream(text_data)
-	processor.process_stream(log_data)
+    print("\n=== Polymarphic Processing Demo ===\n")
+    result = UniversalProcessor(numeric_data)
+    print(f"Result 1: {result}")
+    result = UniversalProcessor(text_data)
+    print(f"Result 2: {result}")
+    result = UniversalProcessor(log_data)
+    print(f"Result 3: {result}")
+    print("\nFoundation systems online. Nexus ready for advaced streams.")
 
 
 if __name__ == "__main__":
-	stream_processor()
+    stream_processor()
