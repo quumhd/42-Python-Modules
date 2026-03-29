@@ -25,7 +25,12 @@ class NumericProcessor(DataProcessor):
                 str(sum(data) / len(data)))
 
     def validate(self, data: Any) -> bool:
-        return all(isinstance(x, (int, float)) for x in data)
+        try:
+            sum(data)
+            len(data)
+            return True
+        except TypeError:
+            return False
 
     def format_output(self, result: str) -> str:
         data: List[str] = result.split()
@@ -40,7 +45,12 @@ class TextProcessor(DataProcessor):
         return str(len(data)) + " " + str(len(data.split()))
 
     def validate(self, data: Any) -> bool:
-        return isinstance(data, str)
+        try:
+            len(data)
+            data.split()
+            return True
+        except AttributeError:
+            return False
 
     def format_output(self, result: str) -> str:
         data: List[str] = result.split()
@@ -54,7 +64,11 @@ class LogProcessor(DataProcessor):
         return f"{data}"
 
     def validate(self, data: Any) -> bool:
-        return isinstance(data, dict)
+        try:
+            str(data)
+            return True
+        except Exception:
+            return False
 
     def format_output(self, result: str) -> str:
         cleaned = result.replace("{", "").replace("}", "")
