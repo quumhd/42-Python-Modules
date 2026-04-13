@@ -23,7 +23,6 @@ def spell_accumulator(initial_power: int) -> callable:
 def enchantment_factory(enchantment_type: str) -> callable:
     """returns a function that adds the enchantment to the item given"""
     def add_enchantment(item_name: str) -> str:
-        nonlocal enchantment_type
         item_name = enchantment_type + " " + item_name
         return item_name
     return add_enchantment
@@ -34,11 +33,9 @@ def memory_vault() -> dict[str, callable]:
     storage = dict()
 
     def store(key: any, value: any) -> None:
-        nonlocal storage
         storage.update({key: value})
 
     def recall(key: any) -> any:
-        nonlocal storage
         if key not in storage:
             return "Memory not found"
         return storage[key]
@@ -49,11 +46,13 @@ def scope_mysteries() -> None:
     """..."""
     print("=== Memory Dephts ===\n")
     mage_count = mage_counter()
+    mage_count_2 = mage_counter()
     print("Testing mage counter...")
-    print(f"Call 1: {mage_count()}")
-    print(f"Call 2: {mage_count()}")
-    print(f"Call 3: {mage_count()}")
-    print(f"Call 4: {mage_count()}")
+    print(f"Call 1 on a: {mage_count()}")
+    print(f"Call 2 on a: {mage_count()}")
+    print(f"Call 1 on b: {mage_count_2()}")
+    print(f"Call 2 on b: {mage_count_2()}")
+    print(f"Call 3 on a: {mage_count()}")
     print()
     print("Testing apell accumulator...")
     accumulator = spell_accumulator(100)
@@ -74,6 +73,10 @@ def scope_mysteries() -> None:
     recall = store_recall['recall']
     functions = [mage_counter, spell_accumulator, enchantment_factory]
     store("functions", functions)
+    store("secret", 42)
+    print("Added key: secret, value: 42")
+    print(f"Recall key: secret: {recall('secret')}")
+    print(f"Recall key: functions: {recall('functions')}")
     print(f"Added key: functions, value: {functions}")
     print(f"Recall key: functions: {recall('functions')}")
     print(f"Recall with unknown key: {recall('test')}")
