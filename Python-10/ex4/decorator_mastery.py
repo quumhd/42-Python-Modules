@@ -6,7 +6,7 @@ import functools
 from typing import Callable
 
 
-def spell_timer(func: callable) -> callable:
+def spell_timer(func: Callable) -> Callable:
     @functools.wraps(func)
     def timer(*args, **kwargs):
         print(f"Casting {func.__name__}...")
