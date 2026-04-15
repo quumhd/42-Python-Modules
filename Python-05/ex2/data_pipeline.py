@@ -104,6 +104,12 @@ class ExportPlugin(Protocol):
     def process_output(self, data: list[tuple[int, str]]) -> None:
         pass
 
+    def process_csv(self, data: list[tuple[int, str]]) -> str:
+        pass
+
+    def process_json(self, data: list[tuple[int, str]]) -> str:
+        pass
+
 
 class DataStream:
     def __init__(self) -> None:
@@ -131,7 +137,14 @@ class DataStream:
                 )
 
     def output_pipline(self, nb: int, plugin: ExportPlugin) -> None:
-        pass
+        for proc in self._processors:
+            data = list()
+            for _ in range(nb):
+                try:
+                    data.append(proc.output)
+                except IndexError:
+                    pass
+            print(data)
 
     def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
@@ -156,9 +169,6 @@ def remove_element(processor: DataProcessor, count: int) -> None:
             processor.output()
         except IndexError:
             return
-
-            
-
 
 
 def data_pipline():
@@ -189,13 +199,17 @@ def data_pipline():
     print("Initialize Data Stream...\n")
     stream_router.print_processors_stats()
     print()
-    print("Registering Processors")
+    print("Registering Processors\n")
     stream_router.register_processor(numeric)
     stream_router.register_processor(text)
     stream_router.register_processor(log)
     stream_router.process_stream(mixed_stream)
     print(f"Send first batch of data on stream: {mixed_stream}")
+    print()
     stream_router.print_processors_stats()
+    print()
+    export = ExportPlugin()
+    print(stream_router.output_pipline(5, export))
 
 
 if __name__ == "__main__":
