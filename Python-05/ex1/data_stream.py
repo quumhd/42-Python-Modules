@@ -1,183 +1,199 @@
 #!/usr/bin/env python3
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Dict, Union, Optional
+from typing import Any
 
 
-class DataStream(ABC):
-    def __init__(self, stream_id: str) -> None:
-        self.stream_id = stream_id
-        self.stats: Dict[str, Union[str, int, float]] = {}
+class DataProcessor(ABC):
+    def __init__(self) -> None:
+        self._buffer: list[tuple[int, str]] = []
+        self._next_rank: int = 1
 
     @abstractmethod
-    def process_batch(self, batch: List[Any]) -> str:
+    def validate(self, data: Any) -> bool:
         pass
 
-    def filter_data(self, data_batch: List[Any],
-                    criteria: Optional[str] = None) -> List[Any]:
-        result: List[Any] = list()
-        try:
-            for item in data_batch:
-                if criteria in str(item):
-                    result.append(item)
-        except Exception as e:
-            print(f"Error occurred while filtering data: {e}")
-        return result
+    @abstractmethod
+    def ingest(self, data: Any) -> None:
+        pass
 
-    def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return self.stats
+    def output(self) -> tuple[int, str]:
+        if not self._buffer:
+            raise IndexError("No ingested data available")
+        return self._buffer.pop(0)
 
-
-class SensorStream(DataStream):
-    def __init__(self, stream_id: str) -> None:
-        self.stream_id = stream_id
-        self.stats: Dict[str, Union[str, int, float]] = {}
-
-        self.stats['avg_temp'] = 0.0
-        self.stats['avg_humidity'] = 0.0
-        self.stats['avg_pressure'] = 0.0
-
-    def process_batch(self, batch: List[Any]) -> str:
-        temp_items = self.filter_data(batch, criteria="temp")
-        humidity_items = self.filter_data(batch, criteria="humidity")
-        pressure_items = self.filter_data(batch, criteria="pressure")
-
-        try:
-            temp = sum(list(temp_items[0].values())) / len(temp_items)
-            hum = sum(list(humidity_items[0].values())) / len(humidity_items)
-            prs = sum(list(pressure_items[0].values())) / len(pressure_items)
-        except (IndexError, ZeroDivisionError) as e:
-            return f"Error processing batch: {e}"
-
-        self.stats['avg_temp'] = temp
-        self.stats['avg_humidity'] = hum
-        self.stats['avg_pressure'] = prs
-
-        return (f"{len(batch)} reading processed: avg_temp={temp},"
-                f"avg_humidity={hum}, avg_pressure={prs}")
-
-    def filter_data(self, data_batch: List[Any],
-                    criteria: Optional[str] = None) -> List[Any]:
-        return super().filter_data(data_batch, criteria)
-
-    def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return super().get_stats()
+    def add_element(self, value: str) -> None:
+        self._buffer.append((self._next_rank, value))
+        self._next_rank += 1
 
 
-class TransactionStream(DataStream):
-    def __init__(self, stream_id: str) -> None:
-        self.stream_id = stream_id
-        self.stats: Dict[str, Union[str, int, float]] = {}
+class NumericProcessor(DataProcessor):
+    def validate(self, data: Any) -> bool:
+        if isinstance(data, bool):
+            return False
+        if isinstance(data, (int, float)):
+            return True
+        if isinstance(data, list):
+            return all(isinstance(item, (int, float)) and
+                       not isinstance(item, bool) for item in data)
+        return False
 
-        self.stats['net_flow'] = 0
-
-    def process_batch(self, batch: List[Any]) -> str:
-        prefix = ""
-        buy = self.filter_data(batch, criteria="buy")
-        sell = self.filter_data(batch, criteria="sell")
-        try:
-            buy_amount = sum(list(item['buy'] for item in buy))
-            sell_amount = sum(list(item['sell'] for item in sell))
-            net_flow = buy_amount - sell_amount
-        except (KeyError, IndexError) as e:
-            return f"Error processing batch: {e}"
-        self.stats['net_flow'] = net_flow
-        if net_flow > 0:
-            prefix = "+"
-        elif net_flow < 0:
-            prefix = "-"
-        return f"{len(batch)} operations, net flow: {prefix}{net_flow}"
-
-    def filter_data(self, data_batch: List[Any],
-                    criteria: Optional[str] = None) -> List[Any]:
-        return super().filter_data(data_batch, criteria)
-
-    def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return super().get_stats()
-
-
-class EventStream(DataStream):
-    def __init__(self, stream_id: str) -> None:
-        self.stream_id = stream_id
-        self.stats: Dict[str, Union[str, int, float]] = {}
-
-    def process_batch(self, batch: List[Any]) -> str:
-        errors = self.filter_data(batch, criteria="error")
-        error_count = len(errors)
-        self.stats['error_count'] = error_count
-        return f"{len(batch)} events, {error_count} errors detected"
-
-    def filter_data(self, data_batch: List[Any],
-                    criteria: Optional[str] = None) -> List[Any]:
-        return super().filter_data(data_batch, criteria)
-
-    def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return super().get_stats()
-
-
-class UnifiedInterface(DataStream):
-    def __init__(self, stream_id: str) -> None:
-        self.stream_id = stream_id
-        self.stats: Dict[str, Union[str, int, float]] = {}
-
-    def process_batch(self, batch: List[Any]) -> str:
-        if all(isinstance(item, dict) and
-               any(key in item for key in ['temp', 'humidity', 'pressure'])
-               for item in batch):
-            processor = SensorStream(self.stream_id)
-        elif all(isinstance(item, dict) and ('buy' in item or 'sell' in item)
-                 for item in batch):
-            processor = TransactionStream(self.stream_id)
-        elif all(isinstance(item, dict) and
-                 any(key in item for key in ['login', 'error', 'logout'])
-                 for item in batch):
-            processor = EventStream(self.stream_id)
+    def ingest(self, data: int | float | list[int | float]) -> None:
+        if not self.validate(data):
+            raise TypeError("Improper numeric data")
+        if isinstance(data, list):
+            for item in data:
+                self.add_element(str(item))
         else:
-            return "Unsupported format"
-        return processor.process_batch(batch)
+            self.add_element(str(data))
 
-    def filter_data(self, data_batch: List[Any],
-                    criteria: Optional[str] = None) -> List[Any]:
-        return super().filter_data(data_batch, criteria)
 
-    def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return super().get_stats()
+class TextProcessor(DataProcessor):
+    def validate(self, data: Any) -> bool:
+        if isinstance(data, str):
+            return True
+        if isinstance(data, list):
+            return all(isinstance(item, str) for item in data)
+        return False
+
+    def ingest(self, data: str | list[str]) -> None:
+        if not self.validate(data):
+            raise TypeError("TextProcessor expects str or list[str]")
+        if isinstance(data, list):
+            for item in data:
+                self.add_element(item)
+        else:
+            self.add_element(data)
+
+
+class LogProcessor(DataProcessor):
+    def validate(self, data: Any) -> bool:
+        if isinstance(data, dict):
+            return (
+                "log_level" in data and
+                "log_message" in data and
+                isinstance(data["log_level"], str) and
+                isinstance(data["log_message"], str)
+            )
+        if isinstance(data, list):
+            return all(isinstance(item, dict) and self.validate(item)
+                       for item in data)
+        return False
+
+    def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
+        if not self.validate(data):
+            raise TypeError(
+                "LogProcessor expects dict[str, str] or list[dict[str, str]]"
+            )
+        if isinstance(data, list):
+            for item in data:
+                self.add_element(self._format_log(item))
+        else:
+            self.add_element(self._format_log(data))
+
+    def _format_log(self, data: dict[str, str]) -> str:
+        level = data["log_level"].strip()
+        message = data["log_message"].strip()
+        return f"{level}: {message}"
+
+
+class DataStream:
+    def __init__(self) -> None:
+        self._processors: list[DataProcessor] = []
+        self._processed_count: dict[int, int] = {}
+
+    def register_processor(self, proc: DataProcessor) -> None:
+        self._processors.append(proc)
+        self._processed_count[id(proc)] = 0
+
+    def process_stream(self, stream: list[Any]) -> None:
+        for item in stream:
+            handled = False
+            for processor in self._processors:
+                if processor.validate(item):
+                    processor.ingest(item)
+                    proc_id = id(processor)
+                    self._processed_count[proc_id] += 1
+                    handled = True
+                    break
+            if not handled:
+                print(
+                    "DataStream error - Can't process "
+                    f"element in stream: {item}"
+                )
+
+    def print_processors_stats(self) -> None:
+        print("== DataStream statistics ==")
+        if not self._processors:
+            print("No processor found, no data")
+            return
+        for processor in self._processors:
+            name = processor.__class__.__name__.replace(
+                "Processor", " Processor"
+            )
+            total_processed = self._processed_count.get(id(processor), 0)
+            remaining = len(processor._buffer)
+            print(
+                f"{name}: total {total_processed} items processed, "
+                f"remaining {remaining} on processor"
+            )
+
+
+def remove_element(processor: DataProcessor, count: int) -> None:
+    for _ in range(count):
+        try:
+            processor.output()
+        except IndexError:
+            return
 
 
 def data_stream() -> None:
-    print("=== CODE NEXUS - POLYMORPHIC STREAM SYSTEM ===\n")
-    print("Initializing SensorStream...")
-    sensor = SensorStream('SENSOR_001')
-    print(f"StreamID: {sensor.stream_id}, Type: Enviromental Data")
-    print("Processing sensor batch: [temp:22.5, humidity:65, pressure:1013]")
-    sensor_data = [{'temp': 22.5}, {'humidity': 65}, {'pressure': 1013}]
-    print(f"Result: {sensor.process_batch(sensor_data)}")
+    numeric = NumericProcessor()
+    text = TextProcessor()
+    log = LogProcessor()
 
-    print("\nInitializing TransactionStream...")
-    transaction = TransactionStream('TRANS_001')
-    print(f"StreamID: {transaction.stream_id}, Type: Financial Data")
-    print("Processing transaction batch: [buy:100, sell:150, buy:75]")
-    trans_data = [{'buy': 100}, {'sell': 150}, {'buy': 75}]
-    print(f"Transaction analysis: {transaction.process_batch(trans_data)}")
+    stream_router = DataStream()
+    mixed_stream: list[Any] = [
+        "Hello world",
+        [3.14, -1, 2.71],
+        [
+            {
+                "log_level": "WARNING",
+                "log_message": "Telnet access! Use ssh instead",
+            },
+            {
+                "log_level": "INFO",
+                "log_message": "User wil is connected",
+            },
+        ],
+        42,
+        ["Hi", "five"],
+    ]
 
-    print("\nInitializing EventStream...")
-    event = EventStream('EVENT_001')
-    print(f"StreamID: {event.stream_id}, Type: System Events")
-    print("Processing event batch: [login, error, logout]")
-    event_data = [{'login': 'user1'}, {'error': '404'}, {'logout': 'user1'}]
-    print(f"Event analysis: {event.process_batch(event_data)}")
-
-    print("\n=== Polymorphic Stream Processing ===")
-    print("Processing mixed steams through unified interface...\n")
-    unified = UnifiedInterface('UNIFIED_001')
-    print("Batch 1 Results:")
-    print(f"- Sensor data: {unified.process_batch(sensor_data)}")
-    print(f"- Transaction data: {unified.process_batch(trans_data)}")
-    print(f"- Event data: {unified.process_batch(event_data)}")
-
-    print("\nStream filtering active: High-priority data only")
-    print("Filtered results: 2 critical sensor alerts, 1 large transaction\n")
-    print("All streams processed successfully. Nexus throughput optimal.")
+    print("=== Code Nexus - Data Stream ===\n")
+    print("Initialize Data Stream...")
+    stream_router.print_processors_stats()
+    print()
+    print("Registering Numeric Processor")
+    print()
+    stream_router.register_processor(numeric)
+    print(f"Send first batch of data on stream: {mixed_stream}")
+    stream_router.process_stream(mixed_stream)
+    stream_router.print_processors_stats()
+    print()
+    print("Registering other data processors")
+    stream_router.register_processor(text)
+    stream_router.register_processor(log)
+    print("Send the same batch again")
+    stream_router.process_stream(mixed_stream)
+    stream_router.print_processors_stats()
+    print()
+    print("Consume some elements from the data processors: "
+          "Numeric 3, Text 2, Log 1")
+    remove_element(numeric, 3)
+    remove_element(text, 2)
+    remove_element(log, 1)
+    stream_router.print_processors_stats()
 
 
 if __name__ == "__main__":
