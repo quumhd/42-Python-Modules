@@ -98,17 +98,32 @@ class LogProcessor(DataProcessor):
 
 
 class ExportPlugin(Protocol):
-    def __init__(self):
-        pass
-
     def process_output(self, data: list[tuple[int, str]]) -> None:
-        pass
+        ...
 
-    def process_csv(self, data: list[tuple[int, str]]) -> str:
-        pass
 
-    def process_json(self, data: list[tuple[int, str]]) -> str:
-        pass
+class CsvPlugin:
+    def process_output(self, data: list[tuple[int, str]]) -> str:
+        csv_data = ""
+        for item in data:
+            _, temp = item
+            if csv_data == "":
+                csv_data = str(temp)
+            else:
+                csv_data = csv_data + "," + str(temp)
+        return "CSV Output:\n" + csv_data
+
+
+class JsonPlugin:
+    def process_output(self, data: list[tuple[int, str]]) -> str:
+        json_data = ""
+        for item in data:
+            count_int, temp = item
+            count = '"item_' + str(count_int) + '": '
+            temp = '"' + str(temp) + '", '
+            json_data = json_data + count + str(temp)
+        json_data = "{" + json_data + "}"
+        return "JSON Output:\n" + json_data
 
 
 class DataStream:
@@ -127,7 +142,11 @@ class DataStream:
                 if processor.validate(item):
                     processor.ingest(item)
                     proc_id = id(processor)
-                    self._processed_count[proc_id] += 1
+                    if isinstance(item, list):
+                        count = len(item)
+                    else:
+                        count = 1
+                    self._processed_count[proc_id] += count
                     handled = True
                     break
             if not handled:
@@ -141,10 +160,10 @@ class DataStream:
             data = list()
             for _ in range(nb):
                 try:
-                    data.append(proc.output)
+                    data.append(proc.output())
                 except IndexError:
                     pass
-            print(data)
+            print(plugin.process_output(data))  # type: ignore
 
     def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
@@ -178,7 +197,7 @@ def data_pipline():
     log = LogProcessor()
 
     stream_router = DataStream()
-    mixed_stream: list[Any] = [
+    mixed_stream = [
         "Hello world",
         [3.14, -1, 2.71],
         [
@@ -195,6 +214,25 @@ def data_pipline():
         ["Hi", "five"],
     ]
 
+    mixed_stream2 = [
+        21,
+        [
+            'I love AI', 'LLMs are wonderful', 'Stay healthy'
+        ],
+        [
+            {
+                'log_level': 'ERROR',
+                'log_message': '500 server crash'
+            },
+            {
+                'log_level': 'NOTICE',
+                'log_message': 'Certificate expires in 10 days'
+                }
+            ],
+        [32, 42, 64, 84, 128, 168],
+        'World hello'
+    ]
+
     print("=== Code Nexus - Data Pipline ===\n")
     print("Initialize Data Stream...\n")
     stream_router.print_processors_stats()
@@ -208,8 +246,19 @@ def data_pipline():
     print()
     stream_router.print_processors_stats()
     print()
-    export = ExportPlugin()
-    print(stream_router.output_pipline(5, export))
+    print("Send 3 processed data from each processor to a CSV plugin:")
+    stream_router.output_pipline(3, CsvPlugin())
+    print()
+    stream_router.print_processors_stats()
+    print()
+    stream_router.process_stream(mixed_stream2)
+    print(f"Send another batch of data: {mixed_stream2}\n")
+    stream_router.print_processors_stats()
+    print()
+    print("Send 5 processed data from each processor to a JSON plugin:")
+    stream_router.output_pipline(5, JsonPlugin())
+    print()
+    stream_router.print_processors_stats()
 
 
 if __name__ == "__main__":

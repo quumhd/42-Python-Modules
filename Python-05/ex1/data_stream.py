@@ -113,7 +113,11 @@ class DataStream:
                 if processor.validate(item):
                     processor.ingest(item)
                     proc_id = id(processor)
-                    self._processed_count[proc_id] += 1
+                    if isinstance(item, list):
+                        count = len(item)
+                    else:
+                        count = 1
+                    self._processed_count[proc_id] += count
                     handled = True
                     break
             if not handled:
@@ -147,13 +151,13 @@ def remove_element(processor: DataProcessor, count: int) -> None:
             return
 
 
-def data_stream() -> None:
+def data_stream():
     numeric = NumericProcessor()
     text = TextProcessor()
     log = LogProcessor()
 
     stream_router = DataStream()
-    mixed_stream: list[Any] = [
+    mixed_stream = [
         "Hello world",
         [3.14, -1, 2.71],
         [

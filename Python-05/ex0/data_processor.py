@@ -97,7 +97,7 @@ class LogProcessor(DataProcessor):
         return f"{level}: {message}"
 
 
-def data_processor() -> None:
+def data_processor():
     numeric = NumericProcessor()
     text = TextProcessor()
     log = LogProcessor()
