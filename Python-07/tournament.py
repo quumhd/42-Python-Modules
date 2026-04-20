@@ -8,17 +8,21 @@ from ex2 import NormalStrategy, AggressiveStrategy, DefensiveStrategy
 
 
 def battle(creatures: list[tuple[Creature, BattleStrategy]]) -> None:
-    print(f"\n\n{creatures}\n\n")
+    for creature, strategy in creatures:
+        print(f"({creature.name}+{strategy.__class__.__name__})", end=" ")
+    print("\n")
     for i, (creature, strategy) in enumerate(creatures):
         attacker = creature
         attacker_strat = strategy
-        for (creature, strategy) in creatures[i:]:
+        print("* Battle *")
+        for (defender, defender_strat) in creatures[i+1:]:
             try:
-                attacker.describe()
+                print(attacker.describe())
                 print(" vs.")
-                creature.describe()
+                print(defender.describe())
+                print("now fight!")
                 attacker_strat.act(attacker)
-                strategy.act(creature)
+                defender_strat.act(defender)
             except ValueError as e:
                 print("ERROR")
                 print(e)
@@ -26,9 +30,7 @@ def battle(creatures: list[tuple[Creature, BattleStrategy]]) -> None:
 
 
 def main() -> None:
-    print("Testing is_valid")
     aqua_factory = AquaFactory()
-    flame_factory = FlameFactory()
     transform_factory = TransformCreatureFactory()
     healing_factory = HealingCreatureFactory()
 
@@ -43,21 +45,29 @@ def main() -> None:
     sproutling = healing_factory.create_base()
     blommelle = healing_factory.create_evolved()
 
-    creatures = [(aquabub, normal_strat), (morphagon, aggressive_strat), (aquabub, normal_strat)]
-    
-    aquabub.describe()
-    print("describe")
-    
-    battle(creatures)
+    print("Tournament 0 (basic)")
+    fight1 = [
+        (aquabub, normal_strat),
+        (morphagon, aggressive_strat),
+        ]
 
-    # print(f"aquabub with normal stat: {normal_strat.is_valid(aquabub)}")
-    # print(f"shiftling with normal stat: {normal_strat.is_valid(shiftling)}")
-    # print(f"morphagonwith aggressive stat: {aggressive_strat.is_valid(morphagon)}")
-    # print(f"shiftling with defensive stat: {defensive_strat.is_valid(shiftling)}")
-    # print(f"bloomelle with defensive stat: {defensive_strat.is_valid(blommelle)}")
-    # print(f"bloomelle with aggressive stat: {aggressive_strat.is_valid(blommelle)}")
-    # print(f"bloomelle with normal stat: {normal_strat.is_valid(blommelle)}")
-    # print(f"aquabub with aggressive stat: {aggressive_strat.is_valid(aquabub)}")
+    fight2 = [
+        (sproutling, normal_strat),
+        (torragon, aggressive_strat),
+        (shiftling, aggressive_strat)
+        ]
+
+    fight3 = [
+        (blommelle, defensive_strat),
+        (morphagon, aggressive_strat),
+        (aquabub, defensive_strat)
+        ]
+
+    battle(fight1)
+    print("Tournament 1 (multiple)")
+    battle(fight2)
+    print("Tournament 2 (error)")
+    battle(fight3)
 
 
 if __name__ == "__main__":
