@@ -2,7 +2,11 @@
 
 from enum import Enum
 from datetime import datetime
-from pydantic import BaseModel, ValidationError, Field, model_validator
+try:
+    from pydantic import BaseModel, ValidationError, Field, model_validator
+except ImportError:
+    print("Pydantic missing: pip install pydantic")
+    exit(1)
 
 
 class Rank(Enum):
@@ -60,10 +64,14 @@ class SpaceMission(BaseModel):
         """checks if the crew an an Commander or Captain"""
         if self.crew is None:
             return
+        has_leader = False
         for member in self.crew:
             if member.rank == Rank.CAPTAIN or member.rank == Rank.COMMANDER:
-                return self
-        raise ValueError("Crew must have at least one captain or commander")
+                has_leader = True
+        if has_leader is False:
+            raise ValueError("Crew must have at least one captain or commander")
+
+        return self
 
 
 def space_crew() -> None:

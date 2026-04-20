@@ -48,6 +48,9 @@ class Bloomelle(Creature, HealCapibility):
     def heal(self) -> str:
         return f"{self.name} heals itself and others for a large amount"
 
+    def describe(self):
+        return super().describe()
+
 
 class Shiftling(Creature, TransformCapibility):
     def __init__(self) -> None:
@@ -68,6 +71,9 @@ class Shiftling(Creature, TransformCapibility):
         self.transformed = False
         return f"{self.name} return to normal"
 
+    def describe(self):
+        return super().describe()
+
 
 class Morphagon(Creature, TransformCapibility):
     def __init__(self) -> None:
@@ -87,3 +93,6 @@ class Morphagon(Creature, TransformCapibility):
     def revert(self):
         self.transformed = False
         return f"{self.name} stabilizes its form"
+
+    def describe(self):
+        return super().describe()
