@@ -29,7 +29,9 @@ class NormalStrategy(BattleStrategy):
 class AggressiveStrategy(BattleStrategy):
     def act(self, creature: Any) -> None:
         if self.is_valid(creature) is False:
-            raise ValueError("Creature type is not supported by aggressive strategy")
+            raise ValueError(
+                "Creature type is not supported by aggressive strategy"
+                )
         print(creature.transform())
         print(creature.attack())
         print(creature.revert())
