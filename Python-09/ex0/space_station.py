@@ -33,7 +33,7 @@ def space_station() -> None:
                 crew_size=6,
                 power_level=88.2,
                 oxygen_level=95.3,
-                last_maintenance="2023-10-01T10:00:00",
+                last_maintenance=datetime.fromisoformat("2023-10-01T10:00:00"),
                 is_operational=True,
                 notes="test_nodes"
                 )
@@ -60,7 +60,7 @@ def space_station() -> None:
                 crew_size=22,
                 power_level=88.2,
                 oxygen_level=95.3,
-                last_maintenance="2023-10-01T10:00:00",
+                last_maintenance=datetime.fromisoformat("2023-10-01T10:00:00"),
                 is_operational=True,
                 )
         print("Valid station created:")

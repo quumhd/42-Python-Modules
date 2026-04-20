@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from enum import Enum
+from typing import Any
 from datetime import datetime
 try:
     from pydantic import BaseModel, ValidationError, Field, model_validator
@@ -20,28 +21,28 @@ class Rank(Enum):
 
 class CrewMember(BaseModel):
     """defines a CrewMember model"""
-    member_id: str = Field(..., min_len=3, max_len=10)
-    name: str = Field(..., min_len=2, max_len=50)
+    member_id: str = Field(..., min_length=3, max_length=10)
+    name: str = Field(..., min_length=2, max_length=50)
     rank: Rank
     age: int = Field(..., ge=18, le=80)
-    specialization: str = Field(..., min_len=3, max_len=30)
+    specialization: str = Field(..., min_length=3, max_length=30)
     years_experience: int = Field(..., ge=0, le=50)
     is_active: bool = True
 
 
 class SpaceMission(BaseModel):
     """defines the SpaceMission Model"""
-    mission_id: str = Field(..., min_len=5, max_len=15)
-    mission_name: str = Field(..., min_len=3, max_len=100)
-    destination: str = Field(..., min_len=3, max_len=50)
+    mission_id: str = Field(..., min_length=5, max_length=15)
+    mission_name: str = Field(..., min_length=3, max_length=100)
+    destination: str = Field(..., min_length=3, max_length=50)
     launch_date: datetime
-    duration_days: int = Field(..., ge=1, max_len=3650)
-    crew: list = Field(..., min_len=1, max_len=12)
+    duration_days: int = Field(..., ge=1, le=3650)
+    crew: list = Field(..., min_length=1, max_length=12)
     mission_status: str = "planned"
     budget_millions: float = Field(..., ge=1.0, le=10000.0)
 
     @model_validator(mode='after')
-    def validate_mission_id(self) -> any:
+    def validate_mission_id(self) -> Any:
         """checks if the mission if starts with an M"""
         if not self.mission_name.startswith("M"):
             raise ValueError("Mission name has to start with an M")
@@ -69,7 +70,9 @@ class SpaceMission(BaseModel):
             if member.rank == Rank.CAPTAIN or member.rank == Rank.COMMANDER:
                 has_leader = True
         if has_leader is False:
-            raise ValueError("Crew must have at least one captain or commander")
+            raise ValueError(
+                "Crew must have at least one captain or commander"
+                )
 
         return self
 
